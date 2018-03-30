@@ -20,7 +20,7 @@ import yelp.YelpAPI;
 public class MySQLDBConnection implements DBConnection {
 	// May ask for implementation of other methods. Just add empty body to them.
 	private Connection conn = null;
-	private static final int MAX_RECOMMENDED_RESTAURANTS = 10;
+	private static final int MAX_RECOMMENDED_RESTAURANTS = 10;//10 recommended restaurants at most
 
 	public MySQLDBConnection() {
 		this(DBUtil.URL);
@@ -158,24 +158,33 @@ public class MySQLDBConnection implements DBConnection {
 	}
 
 	@Override
+	/**
+	 * the recommendation algorithm of the project
+	 * 
+	 * content-based method: The property or attribute of restaurants(category) are known, not guessed or filtered by some other algorithms
+	 * for a certain user, based on the categories of restaurants he has been to, offer the restaurants sharing the same categories as the recommendation
+	 * 
+	 * What to do with recommendation system: to make up missing values for "User-Product" evaluation matrix
+	 */ 
 	public JSONArray recommendRestaurants(String userId) {
 		try {
 			if (conn == null) {
 				return null;
 			}
 
-			Set<String> visitedRestaurants = getVisitedRestaurants(userId);// step
-																			// 1
-			Set<String> allCategories = new HashSet<>();// why hashSet? //step 2
+			Set<String> visitedRestaurants = getVisitedRestaurants(userId);// step 1: to check which restaurants this user has been to.
+			
+			Set<String> allCategories = new HashSet<>();// why hashSet? to avoid duplication //step 2: to store the categories of restaurants which this user has been to.(Italian , Asian etc.)
+			
 			for (String restaurant : visitedRestaurants) {
 				allCategories.addAll(getCategories(restaurant));
 			}
-			Set<String> allRestaurants = new HashSet<>();// step 3
+			Set<String> allRestaurants = new HashSet<>();// step 3: to store all the restaurants which has same categories of the restaurants which this user has been to. 
 			for (String category : allCategories) {
 				Set<String> set = getBusinessId(category);
 				allRestaurants.addAll(set);
 			}
-			Set<JSONObject> diff = new HashSet<>();// step 4
+			Set<JSONObject> diff = new HashSet<>();// step 4: filter out the restaurants which this user has been to and add the remaining unvisited restaurants to diff which stores the recommended restaurants
 			int count = 0;
 			for (String businessId : allRestaurants) {
 				// Perform filtering

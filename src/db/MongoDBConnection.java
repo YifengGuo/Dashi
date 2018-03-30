@@ -18,6 +18,7 @@ import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -175,12 +176,36 @@ public class MongoDBConnection implements DBConnection {
 						options);
 				list.add(obj);
 			}
+			if (term == null || term.isEmpty()) {
 				return new JSONArray(list);
+			} else {
+				// Use text search to perform better efficiency
+				return filterRestaurants(term);
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return null;
 	}
+
+private JSONArray filterRestaurants(String term) {
+	try {
+		Set<JSONObject> set = new HashSet<JSONObject>();
+		FindIterable<Document> iterable = db.getCollection("restaurants").find(Filters.text(term));
+
+		iterable.forEach(new Block<Document>() {
+			@Override
+			public void apply(final Document document) {
+				set.add(getRestaurantsById(document.getString("business_id"), false));
+			}
+		});
+		return new JSONArray(set);
+	} catch (Exception e) {
+		System.out.println(e.getMessage());
+	}
+	return null;
+}
+
 
 
 @Override
