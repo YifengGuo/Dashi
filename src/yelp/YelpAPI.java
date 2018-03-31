@@ -25,42 +25,42 @@ public class YelpAPI {
 	/**
 	 * Create and send a request to Yelp Token Host and return the access token
 	 */	
-	private JSONObject obtainAccessToken() {
-		try {
-			String query = String.format("grant_type=%s&client_id=%s&client_secret=%s",
-					GRANT_TYPE,
-					CLIENT_ID,
-					CLIENT_SECRET);
-			
-			HttpURLConnection connection = (HttpURLConnection) new URL(TOKEN_HOST).openConnection();
-
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST");
-
-			// add request header
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");//yelp required header content
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.write(query.getBytes());
-
-			int responseCode = connection.getResponseCode();
-			System.out.println("\nSending 'POST' request to URL : " + TOKEN_HOST);
-			System.out.println("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			return new JSONObject(response.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	private JSONObject obtainAccessToken() {
+//		try {
+//			String query = String.format("grant_type=%s&client_id=%s&client_secret=%s",
+//					GRANT_TYPE,
+//					CLIENT_ID,
+//					CLIENT_SECRET);
+//			
+//			HttpURLConnection connection = (HttpURLConnection) new URL(TOKEN_HOST).openConnection();
+//
+//			connection.setDoOutput(true);
+//			connection.setRequestMethod("POST");
+//
+//			// add request header
+//			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+//			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");//yelp required header content
+//			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+//			wr.write(query.getBytes());
+//
+//			int responseCode = connection.getResponseCode();
+//			System.out.println("\nSending 'POST' request to URL : " + TOKEN_HOST);
+//			System.out.println("Response Code : " + responseCode);
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//			String inputLine;
+//			StringBuffer response = new StringBuffer();
+//
+//			while ((inputLine = in.readLine()) != null) {
+//				response.append(inputLine);
+//			}
+//			in.close();
+//			return new JSONObject(response.toString());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 
 	/**
@@ -73,7 +73,7 @@ public class YelpAPI {
 				DEFAULT_TERM, latitude, longitude, SEARCH_LIMIT);
 		String url = API_HOST + SEARCH_PATH;
 		try {
-			String access_token = obtainAccessToken().getString("access_token");
+			// String access_token = obtainAccessToken().getString("access_token");
 			HttpURLConnection connection = (HttpURLConnection) new URL(url + "?" + query).openConnection();
 
 			// optional default is GET
@@ -81,7 +81,7 @@ public class YelpAPI {
 
 			// add request header
 			connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-			connection.setRequestProperty("Authorization",  TOKEN_TYPE + " " + access_token);
+			connection.setRequestProperty("Authorization",  "Bearer YQrtk7P8GvO7iBEZC5wbPX-1jvmUDlzV5s7agyZITPkjhHZoh0wUssg10rH42gpCCMYEIAUkWYfEjik0hJnukAGq2kKGh6CRGPb2mHVPEQSAsRX-qUmx6Q8aZpi-WnYx");
 
 			int responseCode = connection.getResponseCode();
 			System.out.println("\nSending 'GET' request to URL : " + url);
@@ -129,7 +129,7 @@ public class YelpAPI {
 	 */
 	public static void main(String[] args) {
 		YelpAPI yelpApi = new YelpAPI();
-		queryAPI(yelpApi, 37.38, -122.08);
+		queryAPI(yelpApi, 40.52, -74.40);
 	}
 }
 

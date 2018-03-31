@@ -43,11 +43,11 @@ public class SearchRestaurants extends HttpServlet {
 		 */
 		
 		// allow access only if session exists
-//		HttpSession session = request.getSession();//if comment, means checking kibana
-//		if (session.getAttribute("user") == null) {
-//			response.setStatus(403);
-//			return;
-//		}
+		HttpSession session = request.getSession();//if comment, means checking kibana
+		if (session.getAttribute("user") == null) {
+			response.setStatus(403);
+			return;
+		}
 		JSONArray array = new JSONArray();
 		
 		DBConnection connection = new MySQLDBConnection();  //MySQL
@@ -57,8 +57,8 @@ public class SearchRestaurants extends HttpServlet {
 				&& request.getParameterMap().containsKey("lon")) {
 			// term is null or empty by default
 			String term = request.getParameter("term");
-			//String userId = (String) session.getAttribute("user");
-              String userId = "1111"; //hard code
+			String userId = (String) session.getAttribute("user");
+              //String userId = "1111"; //hard code
 			double lat = Double.parseDouble(request.getParameter("lat"));
 			double lon = Double.parseDouble(request.getParameter("lon"));
 			LOGGER.log(Level.INFO, "lat:" + lat + ",lon:" + lon);//extra code: kibana experiment
